@@ -76,7 +76,7 @@ fig_actual_vs_forecasted.update_layout(
 
 st.plotly_chart(fig_actual_vs_forecasted)
 
-data = pd.read_excel(r"C:\Users\yasee\Desktop\Kauser\goldprice\dataset.xlsx")
+data = pd.read_excel("Dashboard/dataset.xlsx")
 data['Date'] = pd.to_datetime(data['Date'], format='%d-%m-%Y')
 
 date_range = (pd.Timestamp("2011-12-01"), pd.Timestamp("2024-10-01"))
@@ -95,7 +95,7 @@ with col2:
     st.write("**2011 - 2024**")
 
 
-file_path = "C:\\Users\\yasee\\Desktop\\Kauser\\goldprice\\final_dataset.xlsx"
+file_path = "Dashboard/final_dataset.xlsx"
 
 data = pd.read_excel(file_path, usecols=['Date', 'CPI', 'USD/INR', 'Crude Price', 'Gold Price'
                                          , 'Bond Price', 'Nifty Price',
