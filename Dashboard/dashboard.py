@@ -4,11 +4,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 
-august_data = pd.read_csv(r"C:\Users\yasee\Desktop\Kauser\goldprice\august 2024.csv")
-september_data = pd.read_csv(r"C:\Users\yasee\Desktop\Kauser\goldprice\september 2024.csv")
-october_data = pd.read_csv(r"C:\Users\yasee\Desktop\Kauser\goldprice\october 2024.csv")
-predicted_df = pd.read_csv(r"C:\Users\yasee\Desktop\Kauser\goldprice\predicted_df.csv")  
-predicted_tft = pd.read_csv(r"C:\Users\yasee\Desktop\Kauser\goldprice\predicted_tft.csv")  
+august_data = pd.read_csv("august 2024.csv")
+september_data = pd.read_csv("september 2024.csv")
+october_data = pd.read_csv("october 2024.csv")
+predicted_df = pd.read_csv("predicted_df.csv")  
+predicted_tft = pd.read_csv("predicted_tft.csv")  
 # Convert date column to datetime
 predicted_df['Date'] = pd.to_datetime(predicted_df['Date'])
 
