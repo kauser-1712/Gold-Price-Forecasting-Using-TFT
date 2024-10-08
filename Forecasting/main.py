@@ -26,8 +26,8 @@ def plot_gold_price_forecast(august_data, september_data, october_data, predicte
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
-        x=all_data['date'],
-        y=all_data['predicted_gold_Price'],
+        x=all_data['Date'],
+        y=all_data['Predicted Gold Price'],
         mode='lines+markers',
         line=dict(color='gold', dash='solid'),
         marker=dict(size=5)
@@ -36,8 +36,8 @@ def plot_gold_price_forecast(august_data, september_data, october_data, predicte
     predicted_future_values = predicted_df['Predicted Gold Price'].tolist()
     future_dates = predicted_df['Date'].tolist()
 
-    last_value = all_data['predicted_gold_Price'].iloc[-1]
-    last_date = all_data['date'].iloc[-1]
+    last_value = all_data['Predicted Gold Price'].iloc[-1]
+    last_date = all_data['Date'].iloc[-1]
 
     extended_future_dates = [last_date] + future_dates
     extended_future_values = [last_value] + predicted_future_values
