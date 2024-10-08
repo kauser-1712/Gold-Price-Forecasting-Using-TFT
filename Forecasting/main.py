@@ -6,7 +6,7 @@ from pytorch_forecasting.models.temporal_fusion_transformer import TemporalFusio
 
 
 def make_predictions(file_path):
-    model = TemporalFusionTransformer.load_from_checkpoint(r"C:\Users\yasee\Desktop\Kauser\goldprice\tft-best-checkpoint.ckpt")
+    model = TemporalFusionTransformer.load_from_checkpoint("Forecasting/tft-best-checkpoint.ckpt")
     data = pd.read_excel(file_path)
     data['Date'] = pd.to_datetime(data['Date'], format='%d-%m-%Y')
     last_date = data['Date'].max()
@@ -75,9 +75,9 @@ if uploaded_file is not None:
     st.write("Predicted Gold Prices for the Next 7 Days:")
     st.dataframe(predicted_df.style.hide(axis="index"))
 
-    august_data = pd.read_csv(r"C:\Users\yasee\Desktop\Kauser\goldprice\august 2024.csv")
-    september_data = pd.read_csv(r"C:\Users\yasee\Desktop\Kauser\goldprice\september 2024.csv")
-    october_data = pd.read_csv(r"C:\Users\yasee\Desktop\Kauser\goldprice\october 2024.csv")
+    august_data = pd.read_csv("Forecasting/august 2024.csv")
+    september_data = pd.read_csv("Forecasting/september 2024.csv")
+    october_data = pd.read_csv("Forecasting/october 2024.csv")
 
     fig = plot_gold_price_forecast(august_data, september_data, october_data, predicted_df)
     st.plotly_chart(fig)
