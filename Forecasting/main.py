@@ -4,6 +4,13 @@ import torch
 import plotly.graph_objs as go
 from pytorch_forecasting.models.temporal_fusion_transformer import TemporalFusionTransformer
 
+# Required columns
+required_columns = [
+    "time_idx", "group_id", "Date", "USD/INR", 
+    "Crude Price", "Bond Price", "Nifty Price", 
+    "Repo Rate", "BSE Price", "WPI", 
+    "Silver Price", "Gold Price", "Gold Change %"
+]
 
 def make_predictions(file_path):
     model = TemporalFusionTransformer.load_from_checkpoint("Forecasting/tft-best-checkpoint.ckpt")
@@ -18,7 +25,6 @@ def make_predictions(file_path):
     })
     predicted_df['Date'] = predicted_df['Date'].dt.date
     return predicted_df
-
 
 def plot_gold_price_forecast(august_data, september_data, october_data, predicted_df):
     all_data = pd.concat([august_data, september_data, october_data], ignore_index=True)
@@ -65,19 +71,23 @@ def plot_gold_price_forecast(august_data, september_data, october_data, predicte
 
     return fig
 
-
 st.title("Gold Futures: 7-Day 24K Gold Price Outlook for India")
 st.write("Upload an Excel file with historical gold price data.")
 uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"])
 
 if uploaded_file is not None:
-    predicted_df = make_predictions(uploaded_file)
-    st.write("Predicted Gold Prices for the Next 7 Days:")
-    st.dataframe(predicted_df.style.hide(axis="index"))
+    # Read the file to check for required columns
+    data = pd.read_excel(uploaded_file)
+    if all(col in data.columns for col in required_columns):
+        predicted_df = make_predictions(uploaded_file)
+        st.write("Predicted Gold Prices for the Next 7 Days:")
+        st.dataframe(predicted_df.style.hide(axis="index"))
 
-    august_data = pd.read_csv("Forecasting/august 2024.csv")
-    september_data = pd.read_csv("Forecasting/september 2024.csv")
-    october_data = pd.read_csv("Forecasting/october 2024.csv")
+        august_data = pd.read_csv("Forecasting/august 2024.csv")
+        september_data = pd.read_csv("Forecasting/september 2024.csv")
+        october_data = pd.read_csv("Forecasting/october 2024.csv")
 
-    fig = plot_gold_price_forecast(august_data, september_data, october_data, predicted_df)
-    st.plotly_chart(fig)
+        fig = plot_gold_price_forecast(august_data, september_data, october_data, predicted_df)
+        st.plotly_chart(fig)
+    else:
+        st.error("The uploaded file must contain the following columns: " + ", ".join(required_columns))
