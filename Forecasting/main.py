@@ -71,7 +71,7 @@ def plot_gold_price_forecast(august_data, september_data, october_data, predicte
 
     return fig
 
-st.title("Gold Futures: 7-Day 24K Gold Price Outlook for India")
+st.title("Gold Futures: 7-Day Forecast for 24K Gold Price in India")
 st.write("Upload an Excel file with historical gold price data.")
 uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"])
 
