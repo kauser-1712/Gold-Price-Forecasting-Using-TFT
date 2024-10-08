@@ -1,0 +1,6 @@
+streamlit
+pandas
+torch
+pytorch-forecasting
+plotly
+openpyxl  # for reading Excel files
