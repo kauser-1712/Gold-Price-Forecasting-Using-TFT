@@ -177,9 +177,9 @@ if not next_7_days_forecast.empty and 'Predicted Gold Price' in next_7_days_fore
         gauge_value = 4
 
     fig_gauge = go.Figure(go.Indicator(
-        mode="gauge+number",
+        mode="gauge",  # Use only gauge mode, no number
         value=gauge_value,
-        title={'text': f"Recommendation: {recommendation}"},
+        title={'text': ''},  # Remove title text
         gauge={
             'axis': {'range': [0, 4]},
             'bar': {'color': "darkblue"},
@@ -202,3 +202,4 @@ if not next_7_days_forecast.empty and 'Predicted Gold Price' in next_7_days_fore
 
 else:
     st.write("No valid forecast data available.")
+
