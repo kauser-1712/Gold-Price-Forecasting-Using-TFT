@@ -108,7 +108,7 @@ st.markdown('<h3 style="color:#FFF113;">Correlation of Gold Price with Other Var
 
 selected_variable = st.selectbox(
     "Choose a variable to correlate with Gold Price:",
-    options=['BSE Price', 'Nifty Price', 'Crude Price', 'Silver Price','CPI', 'USD/INR', 
+    options=['BSE Price', 'Nifty Price', 'Crude Price', 'Silver Price', 'CPI', 'USD/INR', 
              'Bond Price', 'Repo Rate', 'Inflation Rate (%)', 'GPR', 'GPRC IND', 
              'US federal', 'WPI', 'Silver Price'],
     index=0
@@ -116,8 +116,10 @@ selected_variable = st.selectbox(
 
 correlation_data = data[['Gold Price', selected_variable]].dropna()
 
+# Calculate the correlation value
 correlation_value = correlation_data.corr().loc['Gold Price', selected_variable]
 
+# Create scatter plot with trendline
 fig_corr = px.scatter(correlation_data, x=selected_variable, y='Gold Price',
                       trendline='ols',
                       title=f'Scatter Plot of Gold Price vs {selected_variable} (Correlation: {correlation_value:.2f})')
@@ -127,4 +129,19 @@ fig_corr.update_layout(xaxis_title=selected_variable,
 
 st.plotly_chart(fig_corr)
 
+# Display correlation coefficient
 st.write(f"Correlation coefficient between Gold Price and {selected_variable}: {correlation_value:.2f}")
+
+# Add interpretation of the correlation value
+if correlation_value > 0.7:
+    interpretation = "There is a strong positive correlation. This means that as the selected variable increases, Gold Price tends to increase significantly."
+elif 0.3 < correlation_value <= 0.7:
+    interpretation = "There is a moderate positive correlation. As the selected variable increases, Gold Price tends to increase, but the relationship is less strong."
+elif -0.3 <= correlation_value <= 0.3:
+    interpretation = "There is little to no correlation. The selected variable does not have a significant linear relationship with Gold Price."
+elif -0.7 < correlation_value <= -0.3:
+    interpretation = "There is a moderate negative correlation. As the selected variable increases, Gold Price tends to decrease."
+else:
+    interpretation = "There is a strong negative correlation. This means that as the selected variable increases, Gold Price tends to decrease significantly."
+
+st.write(f"**Interpretation:** {interpretation}")
