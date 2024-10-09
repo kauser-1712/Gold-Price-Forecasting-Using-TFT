@@ -145,50 +145,53 @@ else:
     interpretation = "There is a strong negative correlation. This means that as the selected variable increases, Gold Price tends to decrease significantly."
 
 st.write(f"**Interpretation:** {interpretation}")
-import pandas as pd
-import streamlit as st
-import plotly.graph_objects as go
-
 predicted_df['Date'] = pd.to_datetime(predicted_df['Date'])
+today = pd.Timestamp.today()
+
 next_7_days_forecast = predicted_df[predicted_df['Date'] > today].head(7)
 
-# Calculate the average change in forecasted prices over the next 7 days
-average_change = next_7_days_forecast['Predicted Gold Price'].pct_change().mean()
+if not next_7_days_forecast.empty and 'Predicted Gold Price' in next_7_days_forecast.columns:
+    
+    next_7_days_forecast = next_7_days_forecast.dropna(subset=['Predicted Gold Price'])
+    average_change = next_7_days_forecast['Predicted Gold Price'].pct_change().mean()
 
-# Define thresholds for recommendations based on average change
-if average_change < -0.03:  # Less than -3% drop
-    recommendation = "Strong Sell"
-    gauge_value = 0
-elif -0.03 <= average_change < -0.01:  # Between -3% to -1% drop
-    recommendation = "Sell"
-    gauge_value = 1
-elif -0.01 <= average_change <= 0.01:  # Between -1% to +1%
-    recommendation = "Neutral"
-    gauge_value = 2
-elif 0.01 < average_change <= 0.03:  # Between +1% to +3% increase
-    recommendation = "Buy"
-    gauge_value = 3
-else:  # More than +3% increase
-    recommendation = "Strong Buy"
-    gauge_value = 4
+    if pd.isna(average_change):
+        recommendation = "No Data"
+        gauge_value = 2
+    elif average_change < -0.03:
+        recommendation = "Strong Sell"
+        gauge_value = 0
+    elif -0.03 <= average_change < -0.01:
+        recommendation = "Sell"
+        gauge_value = 1
+    elif -0.01 <= average_change <= 0.01:
+        recommendation = "Neutral"
+        gauge_value = 2
+    elif 0.01 < average_change <= 0.03:
+        recommendation = "Buy"
+        gauge_value = 3
+    else:
+        recommendation = "Strong Buy"
+        gauge_value = 4
 
-# Create gauge chart
-fig = go.Figure(go.Indicator(
-    mode = "gauge+number",
-    value = gauge_value,
-    title = {'text': f"Recommendation: {recommendation}"},
-    gauge = {
-        'axis': {'range': [0, 4], 'tickvals': [0, 1, 2, 3, 4], 'ticktext': ["Strong Sell", "Sell", "Neutral", "Buy", "Strong Buy"]},
-        'bar': {'color': "darkblue"},
-        'steps' : [
-            {'range': [0, 1], 'color': "red"},
-            {'range': [1, 2], 'color': "orange"},
-            {'range': [2, 3], 'color': "yellow"},
-            {'range': [3, 4], 'color': "lightgreen"},
-        ],
-    }
-))
+    fig_gauge = go.Figure(go.Indicator(
+        mode = "gauge+number",
+        value = gauge_value,
+        title = {'text': f"Recommendation: {recommendation}"},
+        gauge = {
+            'axis': {'range': [0, 4], 'tickvals': [0, 1, 2, 3, 4], 'ticktext': ["Strong Sell", "Sell", "Neutral", "Buy", "Strong Buy"]},
+            'bar': {'color': "darkblue"},
+            'steps': [
+                {'range': [0, 1], 'color': "red"},
+                {'range': [1, 2], 'color': "orange"},
+                {'range': [2, 3], 'color': "yellow"},
+                {'range': [3, 4], 'color': "lightgreen"},
+            ],
+        }
+    ))
 
-# Display the chart in Streamlit
-st.markdown('<h3 style="color:#FFF113;">Investment Recommendation</h3>', unsafe_allow_html=True)
-st.plotly_chart(fig)
+    st.markdown('<h3 style="color:#FFF113;">Investment Recommendation</h3>', unsafe_allow_html=True)
+    st.plotly_chart(fig_gauge)
+
+else:
+    st.write("No valid forecast data available.")
