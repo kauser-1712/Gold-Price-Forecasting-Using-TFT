@@ -146,6 +146,9 @@ else:
 
 st.write(f"**Interpretation:** {interpretation}")
 
+import pandas as pd
+import streamlit as st
+import plotly.graph_objects as go
 
 predicted_df['Date'] = pd.to_datetime(predicted_df['Date'])
 today = pd.Timestamp.today()
@@ -176,13 +179,14 @@ if not next_7_days_forecast.empty and 'Predicted Gold Price' in next_7_days_fore
         recommendation = "Strong Buy"
         gauge_value = 4
 
+    # Create gauge figure
     fig_gauge = go.Figure(go.Indicator(
-        mode="gauge",  # Use only gauge mode, no number
+        mode="gauge",  # Use gauge mode to display arrow
         value=gauge_value,
         title={'text': ''},  # Remove title text
         gauge={
-            'axis': {'range': [0, 4]},
-            'bar': {'color': "darkblue"},
+            'axis': {'range': [0, 4]},  # Set range for the gauge
+            'bar': {'color': "darkblue"},  # Color of the arrow
             'steps': [
                 {'range': [0, 1], 'color': "red"},
                 {'range': [1, 2], 'color': "orange"},
@@ -192,14 +196,50 @@ if not next_7_days_forecast.empty and 'Predicted Gold Price' in next_7_days_fore
             'threshold': {
                 'line': {'color': "black", 'width': 4},
                 'thickness': 0.75,
-                'value': gauge_value
+                'value': gauge_value  # Position of the arrow
             }
         }
     ))
+
+    # Add labels as annotations
+    fig_gauge.add_annotation(
+        text="Strong Sell",
+        xref="paper", yref="paper",
+        x=0.08, y=0.5,
+        showarrow=False,
+        font=dict(size=12, color="red")
+    )
+    fig_gauge.add_annotation(
+        text="Sell",
+        xref="paper", yref="paper",
+        x=0.25, y=0.5,
+        showarrow=False,
+        font=dict(size=12, color="orange")
+    )
+    fig_gauge.add_annotation(
+        text="Neutral",
+        xref="paper", yref="paper",
+        x=0.5, y=0.5,
+        showarrow=False,
+        font=dict(size=12, color="yellow")
+    )
+    fig_gauge.add_annotation(
+        text="Buy",
+        xref="paper", yref="paper",
+        x=0.75, y=0.5,
+        showarrow=False,
+        font=dict(size=12, color="lightgreen")
+    )
+    fig_gauge.add_annotation(
+        text="Strong Buy",
+        xref="paper", yref="paper",
+        x=0.92, y=0.5,
+        showarrow=False,
+        font=dict(size=12, color="lightgreen")
+    )
 
     st.markdown('<h3 style="color:#FFF113;">Investment Recommendation</h3>', unsafe_allow_html=True)
     st.plotly_chart(fig_gauge)
 
 else:
     st.write("No valid forecast data available.")
-
