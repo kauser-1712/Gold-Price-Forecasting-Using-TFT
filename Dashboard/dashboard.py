@@ -29,7 +29,7 @@ else:
 
 def display_collapsible_tables():
     st.markdown('<h3 style="color:#FFF113;">Forecasted Values</h3>', unsafe_allow_html=True)
-
+    predicted_df['Date'] = predicted_df['Date'].astype(str)
     with st.expander("Weekly Forecast"):
         st.write(predicted_df)
     
