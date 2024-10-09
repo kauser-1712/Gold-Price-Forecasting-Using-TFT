@@ -10,7 +10,8 @@ october_data = pd.read_csv("Dashboard/october 2024.csv")
 predicted_df = pd.read_csv("Dashboard/predicted_df.csv")  
 predicted_tft = pd.read_csv("Dashboard/predicted_tft.csv")  
 # Convert date column to datetime
-predicted_df['Date'] = pd.to_datetime(predicted_df['Date'])
+predicted_df['Date'] = pd.to_datetime(predicted_df['Date']).dt.date
+
 
 # Get today's date
 today = datetime.today().date()
