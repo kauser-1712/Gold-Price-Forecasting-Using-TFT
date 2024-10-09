@@ -9,15 +9,15 @@ september_data = pd.read_csv("Dashboard/september 2024.csv")
 october_data = pd.read_csv("Dashboard/october 2024.csv")
 predicted_df = pd.read_csv("Dashboard/predicted_df.csv")  
 predicted_tft = pd.read_csv("Dashboard/predicted_tft.csv")  
+
 # Convert date column to datetime
 predicted_df['Date'] = pd.to_datetime(predicted_df['Date']).dt.date
-
 
 # Get today's date
 today = datetime.today().date()
 
 # Extract the forecast for today
-today_forecast = predicted_df[predicted_df['Date'] == pd.Timestamp(today)]
+today_forecast = predicted_df[predicted_df['Date'] == today]  
 
 # Display the forecast for today
 st.markdown('<h1 style="color:#FFF113;">Gold Trend Analyzer</h1>', unsafe_allow_html=True)
@@ -26,6 +26,7 @@ if not today_forecast.empty:
               value=f"{today_forecast.iloc[0]['Predicted Gold Price']:.2f} INR")
 else:
     st.write(f"No forecast available for today ({today.strftime('%B %d, %Y')}).")
+
 
 def display_collapsible_tables():
     st.markdown('<h3 style="color:#FFF113;">Forecasted Values</h3>', unsafe_allow_html=True)
