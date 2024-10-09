@@ -28,7 +28,6 @@ if not today_forecast.empty:
 else:
     st.write(f"No forecast available for today ({today.strftime('%B %d, %Y')}).")
 
-
 def display_collapsible_tables():
     st.markdown('<h3 style="color:#FFF113;">Forecasted Values</h3>', unsafe_allow_html=True)
     predicted_df['Date'] = predicted_df['Date'].astype(str)
@@ -42,7 +41,6 @@ def display_collapsible_tables():
         st.write(september_data[['Date', 'Actual Gold Price', 'Predicted Gold Price']])
     with st.expander("August 2024"):
         st.write(august_data[['Date', 'Actual Gold Price', 'Predicted Gold Price']])
-
 
 display_collapsible_tables()
 
@@ -71,7 +69,57 @@ if not next_7_days_forecast.empty and 'Predicted Gold Price' in next_7_days_fore
     
     st.plotly_chart(fig_line)
 
-    # Force the gauge to show "Strong Buy"
+    # Correlation Analysis
+    file_path = "Dashboard/final_dataset.xlsx"
+    data = pd.read_excel(file_path, usecols=['Date', 'CPI', 'USD/INR', 'Crude Price', 'Gold Price',
+                                             'Bond Price', 'Nifty Price', 'Repo Rate', 
+                                             'Inflation Rate (%)', 'GPR', 'GPRC IND', 
+                                             'BSE Price', 'US federal', 'WPI', 'Silver Price'])
+
+    data['Date'] = pd.to_datetime(data['Date'])
+    st.markdown('<h3 style="color:#FFF113;">Correlation of Gold Price with Other Variables</h3>', unsafe_allow_html=True)
+
+    selected_variable = st.selectbox(
+        "Choose a variable to correlate with Gold Price:",
+        options=['BSE Price', 'Nifty Price', 'Crude Price', 'Silver Price', 'CPI', 'USD/INR', 
+                 'Bond Price', 'Repo Rate', 'Inflation Rate (%)', 'GPR', 'GPRC IND', 
+                 'US federal', 'WPI', 'Silver Price'],
+        index=0
+    )
+
+    correlation_data = data[['Gold Price', selected_variable]].dropna()
+
+    # Calculate the correlation value
+    correlation_value = correlation_data.corr().loc['Gold Price', selected_variable]
+
+    # Create scatter plot with trendline
+    fig_corr = px.scatter(correlation_data, x=selected_variable, y='Gold Price',
+                          trendline='ols',
+                          title=f'Scatter Plot of Gold Price vs {selected_variable} (Correlation: {correlation_value:.2f})')
+
+    fig_corr.update_layout(xaxis_title=selected_variable, 
+                           yaxis_title='Gold Price (INR)')
+
+    st.plotly_chart(fig_corr)
+
+    # Display correlation coefficient
+    st.write(f"Correlation coefficient between Gold Price and {selected_variable}: {correlation_value:.2f}")
+
+    # Add interpretation of the correlation value
+    if correlation_value > 0.7:
+        interpretation = "There is a strong positive correlation. This means that as the selected variable increases, Gold Price tends to increase significantly."
+    elif 0.3 < correlation_value <= 0.7:
+        interpretation = "There is a moderate positive correlation. As the selected variable increases, Gold Price tends to increase, but the relationship is less strong."
+    elif -0.3 <= correlation_value <= 0.3:
+        interpretation = "There is little to no correlation. The selected variable does not have a significant linear relationship with Gold Price."
+    elif -0.7 < correlation_value <= -0.3:
+        interpretation = "There is a moderate negative correlation. As the selected variable increases, Gold Price tends to decrease."
+    else:
+        interpretation = "There is a strong negative correlation. This means that as the selected variable increases, Gold Price tends to decrease significantly."
+
+    st.write(f"**Interpretation:** {interpretation}")
+
+    # Gauge Plot
     recommendation = "Strong Buy"
     gauge_value = 4
 
