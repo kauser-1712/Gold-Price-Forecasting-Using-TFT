@@ -145,6 +145,8 @@ else:
     interpretation = "There is a strong negative correlation. This means that as the selected variable increases, Gold Price tends to decrease significantly."
 
 st.write(f"**Interpretation:** {interpretation}")
+
+
 predicted_df['Date'] = pd.to_datetime(predicted_df['Date'])
 today = pd.Timestamp.today()
 
@@ -175,11 +177,11 @@ if not next_7_days_forecast.empty and 'Predicted Gold Price' in next_7_days_fore
         gauge_value = 4
 
     fig_gauge = go.Figure(go.Indicator(
-        mode = "gauge+number",
-        value = gauge_value,
-        title = {'text': f"Recommendation: {recommendation}"},
-        gauge = {
-            'axis': {'range': [0, 4], 'tickvals': [0, 1, 2, 3, 4], 'ticktext': ["Strong Sell", "Sell", "Neutral", "Buy", "Strong Buy"]},
+        mode="gauge+number",
+        value=gauge_value,
+        title={'text': f"Recommendation: {recommendation}"},
+        gauge={
+            'axis': {'range': [0, 4]},
             'bar': {'color': "darkblue"},
             'steps': [
                 {'range': [0, 1], 'color': "red"},
@@ -187,6 +189,11 @@ if not next_7_days_forecast.empty and 'Predicted Gold Price' in next_7_days_fore
                 {'range': [2, 3], 'color': "yellow"},
                 {'range': [3, 4], 'color': "lightgreen"},
             ],
+            'threshold': {
+                'line': {'color': "black", 'width': 4},
+                'thickness': 0.75,
+                'value': gauge_value
+            }
         }
     ))
 
