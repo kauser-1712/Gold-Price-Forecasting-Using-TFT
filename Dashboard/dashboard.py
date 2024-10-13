@@ -4,11 +4,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 
-august_data = pd.read_csv("Dashboard\august 2024.csv")
-september_data = pd.read_csv("Dashboard\september 2024.csv")
-october_data = pd.read_csv("Dashboard\october 2024.csv")
-predicted_df = pd.read_csv("Dashboard\predicted_df.csv")  
-predicted_tft = pd.read_csv("Dashboard\predicted_tft.csv")  
+august_data = pd.read_csv("Dashboard/august 2024.csv")
+september_data = pd.read_csv("Dashboard/september 2024.csv")
+october_data = pd.read_csv("Dashboard/october 2024.csv")
+predicted_df = pd.read_csv("Dashboard/predicted_df.csv")  
+predicted_tft = pd.read_csv("Dashboard/predicted_tft.csv")  
 # Convert date column to datetime
 predicted_df['Date'] = pd.to_datetime(predicted_df['Date'])
 
@@ -76,7 +76,7 @@ fig_actual_vs_forecasted.update_layout(
 
 st.plotly_chart(fig_actual_vs_forecasted)
 
-data = pd.read_excel("Dashboard\dataset.xlsx")
+data = pd.read_excel("Dashboard/dataset.xlsx")
 data['Date'] = pd.to_datetime(data['Date'], format='%d-%m-%Y')
 
 date_range = (pd.Timestamp("2011-12-01"), pd.Timestamp("2024-10-01"))
@@ -95,7 +95,7 @@ with col2:
     st.write("**2011 - 2024**")
 
 
-file_path = "Dashboard\final_dataset.xlsx"
+file_path = "Dashboard/final_dataset.xlsx"
 
 data = pd.read_excel(file_path, usecols=['Date', 'CPI', 'USD/INR', 'Crude Price', 'Gold Price'
                                          , 'Bond Price', 'Nifty Price',
