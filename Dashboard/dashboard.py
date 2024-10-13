@@ -4,20 +4,19 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 
-august_data = pd.read_csv("Dashboard/august 2024.csv")
-september_data = pd.read_csv("Dashboard/september 2024.csv")
-october_data = pd.read_csv("Dashboard/october 2024.csv")
-predicted_df = pd.read_csv("Dashboard/predicted_df.csv")  
-predicted_tft = pd.read_csv("Dashboard/predicted_tft.csv")  
-
+august_data = pd.read_csv("Dashboard\august 2024.csv")
+september_data = pd.read_csv("Dashboard\september 2024.csv")
+october_data = pd.read_csv("Dashboard\october 2024.csv")
+predicted_df = pd.read_csv("Dashboard\predicted_df.csv")  
+predicted_tft = pd.read_csv("Dashboard\predicted_tft.csv")  
 # Convert date column to datetime
-predicted_df['Date'] = pd.to_datetime(predicted_df['Date']).dt.date
+predicted_df['Date'] = pd.to_datetime(predicted_df['Date'])
 
 # Get today's date
 today = datetime.today().date()
 
 # Extract the forecast for today
-today_forecast = predicted_df[predicted_df['Date'] == today]  
+today_forecast = predicted_df[predicted_df['Date'] == pd.Timestamp(today)]
 
 # Display the forecast for today
 st.markdown('<h1 style="color:#FFF113;">Gold Trend Analyzer</h1>', unsafe_allow_html=True)
@@ -27,10 +26,9 @@ if not today_forecast.empty:
 else:
     st.write(f"No forecast available for today ({today.strftime('%B %d, %Y')}).")
 
-
 def display_collapsible_tables():
     st.markdown('<h3 style="color:#FFF113;">Forecasted Values</h3>', unsafe_allow_html=True)
-    predicted_df['Date'] = predicted_df['Date'].astype(str)
+
     with st.expander("Weekly Forecast"):
         st.write(predicted_df)
     
@@ -78,7 +76,7 @@ fig_actual_vs_forecasted.update_layout(
 
 st.plotly_chart(fig_actual_vs_forecasted)
 
-data = pd.read_excel("Dashboard/dataset.xlsx")
+data = pd.read_excel("Dashboard\dataset.xlsx")
 data['Date'] = pd.to_datetime(data['Date'], format='%d-%m-%Y')
 
 date_range = (pd.Timestamp("2011-12-01"), pd.Timestamp("2024-10-01"))
@@ -97,7 +95,7 @@ with col2:
     st.write("**2011 - 2024**")
 
 
-file_path = "Dashboard/final_dataset.xlsx"
+file_path = "Dashboard\final_dataset.xlsx"
 
 data = pd.read_excel(file_path, usecols=['Date', 'CPI', 'USD/INR', 'Crude Price', 'Gold Price'
                                          , 'Bond Price', 'Nifty Price',
@@ -109,7 +107,7 @@ st.markdown('<h3 style="color:#FFF113;">Correlation of Gold Price with Other Var
 
 selected_variable = st.selectbox(
     "Choose a variable to correlate with Gold Price:",
-    options=['BSE Price', 'Nifty Price', 'Crude Price', 'Silver Price', 'CPI', 'USD/INR', 
+    options=['BSE Price', 'Nifty Price', 'Crude Price', 'Silver Price','CPI', 'USD/INR', 
              'Bond Price', 'Repo Rate', 'Inflation Rate (%)', 'GPR', 'GPRC IND', 
              'US federal', 'WPI', 'Silver Price'],
     index=0
@@ -117,10 +115,8 @@ selected_variable = st.selectbox(
 
 correlation_data = data[['Gold Price', selected_variable]].dropna()
 
-# Calculate the correlation value
 correlation_value = correlation_data.corr().loc['Gold Price', selected_variable]
 
-# Create scatter plot with trendline
 fig_corr = px.scatter(correlation_data, x=selected_variable, y='Gold Price',
                       trendline='ols',
                       title=f'Scatter Plot of Gold Price vs {selected_variable} (Correlation: {correlation_value:.2f})')
@@ -130,77 +126,4 @@ fig_corr.update_layout(xaxis_title=selected_variable,
 
 st.plotly_chart(fig_corr)
 
-# Display correlation coefficient
 st.write(f"Correlation coefficient between Gold Price and {selected_variable}: {correlation_value:.2f}")
-
-# Add interpretation of the correlation value
-if correlation_value > 0.7:
-    interpretation = "There is a strong positive correlation. This means that as the selected variable increases, Gold Price tends to increase significantly."
-elif 0.3 < correlation_value <= 0.7:
-    interpretation = "There is a moderate positive correlation. As the selected variable increases, Gold Price tends to increase, but the relationship is less strong."
-elif -0.3 <= correlation_value <= 0.3:
-    interpretation = "There is little to no correlation. The selected variable does not have a significant linear relationship with Gold Price."
-elif -0.7 < correlation_value <= -0.3:
-    interpretation = "There is a moderate negative correlation. As the selected variable increases, Gold Price tends to decrease."
-else:
-    interpretation = "There is a strong negative correlation. This means that as the selected variable increases, Gold Price tends to decrease significantly."
-
-st.write(f"**Interpretation:** {interpretation}")
-
-
-
-predicted_df['Date'] = pd.to_datetime(predicted_df['Date'])
-today = pd.Timestamp.today()
-
-next_7_days_forecast = predicted_df[predicted_df['Date'] > today].head(7)
-
-if not next_7_days_forecast.empty and 'Predicted Gold Price' in next_7_days_forecast.columns:
-    
-    next_7_days_forecast = next_7_days_forecast.dropna(subset=['Predicted Gold Price'])
-    average_change = next_7_days_forecast['Predicted Gold Price'].pct_change().mean()
-
-    if pd.isna(average_change):
-        recommendation = "No Data"
-        gauge_value = 2
-    elif average_change < -0.03:
-        recommendation = "Strong Sell"
-        gauge_value = 0
-    elif -0.03 <= average_change < -0.01:
-        recommendation = "Sell"
-        gauge_value = 1
-    elif -0.01 <= average_change <= 0.01:
-        recommendation = "Neutral"
-        gauge_value = 2
-    elif 0.01 < average_change <= 0.03:
-        recommendation = "Buy"
-        gauge_value = 3
-    else:
-        recommendation = "Strong Buy"
-        gauge_value = 4
-
-    fig_gauge = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=gauge_value,
-        title={'text': f"Recommendation: {recommendation}"},
-        gauge={
-            'axis': {'range': [0, 4]},
-            'bar': {'color': "darkblue"},
-            'steps': [
-                {'range': [0, 1], 'color': "red"},
-                {'range': [1, 2], 'color': "orange"},
-                {'range': [2, 3], 'color': "yellow"},
-                {'range': [3, 4], 'color': "lightgreen"},
-            ],
-            'threshold': {
-                'line': {'color': "black", 'width': 4},
-                'thickness': 0.75,
-                'value': gauge_value
-            }
-        }
-    ))
-
-    st.markdown('<h3 style="color:#FFF113;">Investment Recommendation</h3>', unsafe_allow_html=True)
-    st.plotly_chart(fig_gauge)
-
-else:
-    st.write("No valid forecast data available.")
